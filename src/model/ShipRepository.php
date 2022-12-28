@@ -21,6 +21,34 @@ class ShipRepository
     public DatabaseConnection $connectiondb;
 
 
+    public function getShips(){
+
+        $statement = $this->connectiondb->getConnection()->prepare(
+            "SELECT `id`, `name`, `nbrRooms`, `nbrPlaces` FROM `ship` WHERE 1"
+        );
+
+        $statement->execute();
+
+        $results = $statement->fetchAll();
+
+
+        return $results;
+    }
+
+
+    public function getDiffShips(string $shipId){
+
+        $statement = $this->connectiondb->getConnection()->prepare(
+            "SELECT `id`, `name` FROM `ship` WHERE id!=?"
+        );
+
+        $statement->execute([$shipId]);
+
+        $results = $statement->fetchAll();
+
+
+        return $results;
+    }
 
     public function getShipName($identifier){
 
@@ -40,46 +68,51 @@ class ShipRepository
     public function addShip(array $input)
    {
 
-    $name = $input['name'];
+    $name = $input['nameShip'];
     $nbrRooms = $input['nbrRooms'];
     $nbrPlaces = $input['nbrPlaces'];
 
     $statement = $this->connectiondb->getConnection()->prepare(
         "INSERT INTO `ship`(`name`, `nbrRooms`, `nbrPlaces`) VALUES (?,?,?)"
     );
+
     $affectedLines = $statement->execute([$name, $nbrRooms, $nbrPlaces]);
-
-
-    
 
     return ($affectedLines > 0);
   }
 
 
-  public function deleteShip(string $identifier)
+   public function modifyShip(string $idShip, array $input)
+   {
+
+    $name = $input['nameShip'];
+    $nbrRooms = $input['nbrRooms'];
+    $nbrPlaces = $input['nbrPlaces'];
+
+    $statement = $this->connectiondb->getConnection()->prepare(
+
+        "UPDATE `ship` SET (`name`, `nbrRooms`, `nbrPlaces`) VALUES (?,?,?) WHERE id=?"
+    );
+
+    $affectedLines = $statement->execute([$name, $nbrRooms, $nbrPlaces, $idShip]);
+
+    return ($affectedLines > 0);
+
+  }
+
+
+  public function deleteShip(string $idShip)
  {
 
     $statement = $this->connectiondb->getConnection()->prepare(
         "DELETE FROM `ship` WHERE id = ?"
     );
-    $affectedLines = $statement->execute([$identifier]);
+    
+    $affectedLines = $statement->execute([$idShip]);
 
     return ($affectedLines > 0);
 
  }
-
-
- public function minPrice($identifier){
-
-    $statement = $this->connectiondb->getConnection()->prepare(
-        "SELECT MIN(price) AS minPrice FROM `room` WHERE id=?"
-    );
-    $min = $statement->execute([$identifier]);
-
-return $min['minPrice'];
-}
-
-    
 
 
 }

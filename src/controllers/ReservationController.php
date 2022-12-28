@@ -67,7 +67,7 @@ class ReservationController{
 
         }
 
-        require ('templates/myDashboard.php');
+        require ('templates/myReservation.php');
     }
 
 
@@ -80,15 +80,43 @@ class ReservationController{
         $connectiondb = new DatabaseConnection();
 
 
-        $userRepo = new ReservationRepository();
-        $userRepo->connectiondb = $connectiondb;
+        $reservationRepo = new ReservationRepository();
+        $reservationRepo->connectiondb = $connectiondb;
+
+        $cruiseRepo = new CruiseRepository();
+        $cruiseRepo->connectiondb = $connectiondb;
+
+        $cruiseId = $reservationRepo->getCruiseId($reservationId);
 
 
-        if($userRepo->canBeCancelled($reservationId)){
-            $userRepo->cancelReservation($reservationId,$_SESSION['idClient']);
+        if($cruiseRepo->canBeCancelled($cruiseId)){
+
+            $success = $reservationRepo->cancelReservation($reservationId);
+
+            if (!$success) {
+
+                throw new Exception("Erreur lors de l'annulation de la reservation !");
+    
+            } else {
+
+
+                $success = $cruiseRepo->unsetfull($cruiseId);
+
+                if (!$success) {
+
+                    throw new Exception("Erreur lors de la mise à jour de l'état de la croisière !");
+        
+                } else {
+        
+                    header('Location: index.php?action=myReservations');
+                }
+    
+            }
+
         }else{
-            $em = "la reservation ne sera plus annulée time!!";
-            require ('index.php?action=myDashboard&em='.$em);
+
+            $em = "la réservation ne peut plus etre annulée";
+            header ('Location: index.php?action=myReservations&em='.$em);
             
         }
 
@@ -103,25 +131,110 @@ class ReservationController{
         $reservationRepo = new ReservationRepository();
         $reservationRepo->connectiondb = $connectiondb;
 
+        $roomRepo = new RoomRepository();
+        $roomRepo->connectiondb = $connectiondb;
+
+        $cruiseRepo = new CruiseRepository();
+        $cruiseRepo->connectiondb = $connectiondb;
+
+        //getting ship id
         
-        $success = $reservationRepo->reserve($cruiseId, $roomTypeId);
+        $shipId = $cruiseRepo->getShipId($cruiseId);
 
-        if (!$success) {
+        //getting available rooms from room table 
+        $allRooms = $roomRepo->getTotRooms($shipId);
 
-            throw new Exception("Impossible de reserver cette croisière !");
+        
 
-        } else {
+        $allReservedRooms = $reservationRepo->reservedRooms($cruiseId);
 
-            header('Location: index.php?action=myDashboard');
+        $diff = $allRooms - $allReservedRooms;
+
+        if($diff==1){
+
+            $cruiseRepo->setfull($cruiseId);
+
         }
 
-    }
 
 
 
+        $avlRooms = $roomRepo->getAvlNbrRooms($shipId,$roomTypeId);
 
+        if($avlRooms>0){
+
+           $roomTypePrice = $roomRepo->getRoomPrice($shipId,$roomTypeId);
+
+        }else{
+
+            throw new Exception("Ce type de chambre n'est pas disponible sur ce navire pour le moment");
+
+        }
+        
+        $reservedRoomsIds = $reservationRepo->getReservedRoomsIds($cruiseId);
+
+
+        $reservedRooms=0;
+
+        foreach($reservedRoomsIds as $reservedRoomId){
+
+            if($roomTypeId==$roomRepo->getRoomType($reservedRoomId['room'])){
+                $reservedRooms++;
+            }
+
+        }
+
+        if($reservedRooms<$avlRooms){
+
+
+            $avlRoomsIds = $roomRepo->getAvlRoomsIds($shipId,$roomTypeId);
+
+            
+            foreach($avlRoomsIds as $avlRoomId){
+
+                if(!$reservationRepo->isreserved($cruiseId,$avlRoomId['id'])){
+
+                    $reservedRoomId = $avlRoomId['id'];
+
+                    break;
+
+                }
+            }
+
+
+            $success = $reservationRepo->reserve($cruiseId,$roomTypePrice,$reservedRoomId);
+
+            if (!$success) {
+
+                throw new Exception("Impossible de reserver cette croisière !");
     
+            } else {
 
+                // if($diff==1){
 
+                //     $success = $cruiseRepo->setfull($cruiseId);
+
+                // }
+
+                if (!$success) {
+
+                    throw new Exception("Erreur lors de la mise à jour de l'état de la croisière !");
+        
+                } else {
+        
+                    header('Location: index.php?action=myReservations');
+                }
+    
+                
+            }
+            
+        }else{
+
+            throw new Exception("La croisière est pleine");
+
+        }
+        
+
+    }
 
 }

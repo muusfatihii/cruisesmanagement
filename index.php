@@ -14,18 +14,17 @@ session_start();
 
 
 
-
-
 try {
-    if (isset($_GET['action']) && $_GET['action'] !== '') {
 
+    if (isset($_GET['action']) && $_GET['action'] !== '') {
 
         switch($_GET['action']) {
 
             case 'signupPage':
+
                 $em = "";
                 (new PageController())->signupPage($em);
- 
+
                 break;
 
             case 'signup':
@@ -43,10 +42,13 @@ try {
                     (new PageController())->signupPage($em);
 
                 }
+
                 break;
 
             case 'signinPage':
+
                 $em = "";
+
                 (new PageController())->signinPage($em);
 
                 break;
@@ -55,12 +57,16 @@ try {
 
                 if(isset($_POST['email']) && !empty($_POST['email']) 
                 && isset($_POST['password']) && !empty($_POST['password'])){
+
                     (new ConnectionController())->signin($_POST);
+
                 }else{
+
                     $em = "Un des champs requis est vide!!";
                     (new PageController())->signinPage($em);
 
                 }
+
                 break;
 
             case 'logout':
@@ -68,9 +74,37 @@ try {
                 $_SESSION['admin']='';
                 $_SESSION['email']='';
                 $_SESSION['idClient']='';
+
                 (new PageController())->homepage();
 
                 break;
+
+            case 'adminDashboard':
+
+                (new PageController())->adminDashboard();
+
+
+                break;
+            
+            case 'cruisesDashboard':
+
+                (new PageController())->cruisesDashboard();
+
+                break;
+            
+            case 'shipsDashboard':
+
+                (new PageController())->shipsDashboard();
+
+                break;
+            
+            case 'portsDashboard':
+
+                (new PageController())->portsDashboard();
+
+                break;
+
+            
 
             case 'cruises':
 
@@ -91,6 +125,7 @@ try {
                     }
                     
                 }
+
                 break;
             
             case 'cruise':
@@ -111,20 +146,39 @@ try {
               
             case 'addCruise':
 
-                (new CruiseController())->addCruise($_POST, $_FILES['pic']);
+                if(isset($_SESSION['admin']) && $_SESSION['admin']==1){
+
+                (new CruiseController())->addCruise($_POST, $_FILES['picCruise']);
+
+                }else{
+
+                    throw new Exception("La page que vous recherchez n'existe pas.");
+
+                }
 
               break;
 
             case 'modifyCruise':
 
-                if (isset($_GET['idCruise']) && $_GET['idCruise'] > 0) {
+                if(isset($_SESSION['admin']) && $_SESSION['admin']==1){
 
-                    $Cruiseid = $_GET['idCruise'];
-            
-                    (new CruiseController())->modifyCruise($Cruiseid, $_POST, $_FILES['pic']);
-                } else {
-                    throw new Exception("Aucun identifiant de cruise n'est indiqué");
+                    if (isset($_GET['idCruise']) && $_GET['idCruise'] > 0) {
+
+                        $Cruiseid = $_GET['idCruise'];
+                
+                        (new CruiseController())->modifyCruise($Cruiseid, $_POST, $_FILES['picCruise']);
+
+                    } else {
+
+                        throw new Exception("Aucun identifiant de cruise n'est indiqué");
+                    }
+
+                }else{
+
+                    throw new Exception("La page que vous recherchez n'existe pas.");
+
                 }
+
                 break;
 
             case 'deleteCruise':
@@ -152,7 +206,7 @@ try {
 
                     }else{
 
-                        (new CruiseController())->filterCruises($idcategory);
+                        //(new CruiseController())->filterCruises($idcategory);
                     }
                     
                 } else {
@@ -163,18 +217,18 @@ try {
     
                     }else{
 
-                        (new CruiseController())->cruises();
+                        (new CruiseController())->cruises($page,$start_from,$limit);
                     }
                 }
 
                 break;
 
 
-            case 'addPage':
+            case 'addPortPage':
 
                 if(isset($_SESSION['admin']) && $_SESSION['admin']==1){
 
-                (new PageController())->addPage();
+                (new PageController())->addPortPage();
 
                 }else{
 
@@ -183,33 +237,225 @@ try {
                 }
 
                 break;
-                
-            case 'modifyPage':
+
+            case 'addShipPage':
+
+                if(isset($_SESSION['admin']) && $_SESSION['admin']==1){
+
+                (new PageController())->addShipPage();
+
+                }else{
+
+                    throw new Exception("La page que vous recherchez n'existe pas.");
+
+                }
+
+                break;
+
+            case 'addCruisePage':
+
+                if(isset($_SESSION['admin']) && $_SESSION['admin']==1){
+
+                      (new PageController())->addCruisePage();
+
+                    }else{
+    
+                        throw new Exception("La page que vous recherchez n'existe pas.");
+    
+                    }
+
+                break;
+
+            case 'modifyCruisePage':
+
+                if(isset($_SESSION['admin']) && $_SESSION['admin']==1){
+
+                    if (isset($_GET['cruiseId']) && !empty($_GET['cruiseId'])) 
+                    {
+                        (new PageController())->modifyCruisePage($_GET['cruiseId']);
+
+                    }else{
+
+                        throw new Exception("Aucun identifiant de cruise n'est indiqué");
+                    }
+    
+
+                }else{
+    
+                        throw new Exception("La page que vous recherchez n'existe pas.");
+    
+                }
+
+                break;
+
+            case 'addPort':
+
+                if(isset($_SESSION['admin']) && $_SESSION['admin']==1){
+
+                    if (isset($_POST['namePort']) && isset($_POST['country'])){
+
+                        $input['namePort'] = $_POST['namePort'];
+                        $input['country'] = $_POST['country'];
+
+                        (new PortController())->addPort($input);
+                    
+                    }else{
+
+                        throw new Exception("Champs requis non remplis");
+
+                    }
+
+                }else{
+
+                    throw new Exception("La page que vous recherchez n'existe pas.");
+
+                }
+
+                break;
+
+            case 'deletePort':
+
+                if(isset($_SESSION['admin']) && $_SESSION['admin']==1){
+
+                    if (isset($_GET['id']) && !empty($_POST['id'])){
+
+
+                        (new PortController())->deletePort($_GET['id']);
+                    
+                    }else{
+
+                        throw new Exception("Aucun identifiant de port n'est indiqué");
+
+                    }
+
+                }else{
+
+                    throw new Exception("La page que vous recherchez n'existe pas.");
+
+                }
+
+                break;
+            
+            case 'addShip':
+
+                if(isset($_SESSION['admin']) && $_SESSION['admin']==1){
+
+                    if (isset($_POST['nameShip']) && isset($_POST['nbrRooms'])
+                    && isset($_POST['nbrPlaces'])){
+
+                        $input['nameShip'] = $_POST['nameShip'];
+                        $input['nbrRooms'] = $_POST['nbrRooms'];
+                        $input['nbrPlaces'] = $_POST['nbrPlaces'];
+
+
+                        (new ShipController())->addShip($input);
+                    
+                    }else{
+
+                        throw new Exception("Champs requis non remplis");
+
+                    }
+
+                }else{
+
+                    throw new Exception("La page que vous recherchez n'existe pas.");
+
+                }
+
+                break;
+            
+            case 'deleteShip':
+
+                if(isset($_SESSION['admin']) && $_SESSION['admin']==1){
+
+                    if (isset($_GET['id']) && !empty($_POST['id'])){
+
+
+                        (new ShipController())->deleteShip($_GET['id']);
+                    
+                    }else{
+
+                        throw new Exception("Aucun identifiant de navire n'est indiqué");
+
+                    }
+
+                }else{
+
+                    throw new Exception("La page que vous recherchez n'existe pas.");
+
+                }
+
+                break;
+
+            
+            case 'modifyPort':
 
                 if(isset($_SESSION['admin']) && $_SESSION['admin']==1){
 
                 if (isset($_GET['id']) && $_GET['id'] > 0) {
 
-                    $identifier = $_GET['id'];
-            
-                    (new PageController())->modifyPage($identifier);
+                    if (isset($_POST['namePort']) && isset($_POST['country'])){
+
+                        $input['namePort'] = $_POST['namePort'];
+                        $input['country'] = $_POST['country'];
+
+                        (new PortController())->modifyPort($_GET['id'],$input);
+                    
+                    }else{
+
+                        throw new Exception("Champs requis non remplis");
+
+                    }
 
                 } else {
 
-                    throw new Exception("Aucun identifiant de cruise n'est indiqué");
+                    throw new Exception("Aucun identifiant de port n'est indiqué");
                 }
 
                 }else{
                 
                 throw new Exception("La page que vous recherchez n'existe pas.");
+
                 }
 
                 break;
 
+            case 'modifyShip':
+
+                if(isset($_SESSION['admin']) && $_SESSION['admin']==1){
+
+                if (isset($_GET['id']) && $_GET['id'] > 0) {
+
+                    if (isset($_POST['nameShip']) && isset($_POST['nbrRooms'])
+                    && isset($_POST['nbrPlaces'])){
+
+                        $input['nameShip'] = $_POST['nameShip'];
+                        $input['nbrRooms'] = $_POST['nbrRooms'];
+                        $input['nbrPlaces'] = $_POST['nbrPlaces'];
 
 
+                        (new ShipController())->modifyShip($_GET['id'],$input);
+                    
+                    }else{
 
-            case 'dashBoard':
+                        throw new Exception("Champs requis non remplis");
+
+                    }
+
+                } else {
+
+                    throw new Exception("Aucun identifiant de navire n'est indiqué");
+                }
+
+                }else{
+                
+                throw new Exception("La page que vous recherchez n'existe pas.");
+
+                }
+
+                break;
+
+            case 'myReservations':
 
                 if (isset($_SESSION['idClient']) && !empty($_SESSION['idClient'])) {
 
@@ -217,52 +463,59 @@ try {
 
                 }else{
 
-                    throw new Exception("Aucun client n'est indiqué!!");
+                    throw new Exception("La page que vous recherchez n'existe pas.");
                 }
 
                 break;
 
-                
-
-            case 'cancelReservation':
-
-                if (isset($_GET['id']) && $_GET['id'] > 0) {
-
-                    $identifier = $_GET['id'];
-
-                (new ReservationController())->cancelReservation($identifier);
-
-                }else{
-
-                    throw new Exception("Aucune Reservation n'est indiqué!!");
-                }
-
-                break;
-            
             case 'reserve':
 
              if (isset($_SESSION['idClient']) && !empty($_SESSION['idClient'])) {
                 
-                if (isset($_GET['id']) && $_GET['id'] > 0 &&
-                isset($_GET['roomtype']) && $_GET['roomtype'] > 0 ) {
+                if (isset($_GET['idCruise']) && $_GET['idCruise'] > 0 &&
+                isset($_POST['roomType']) && !empty($_POST['roomType']) ) {
 
-                    $cruiseId = $_GET['id'];
-                    $roomTypeId = $_GET['roomtype'];
+                    $cruiseId = $_GET['idCruise'];
+                    $roomTypeId = $_POST['roomType'];
                     
                 (new ReservationController())->reserve($cruiseId,$roomTypeId);
 
                 }else{
                     
-                    throw new Exception("Aucune croisière n'est indiquée!!");
+                    throw new Exception("aucun identifiant n'est indiqué!!");
                 }
 
               }else{
 
-                throw new Exception("La page que vous recherchez n'existe pas.");
+                $em = "";
+
+                (new PageController())->signinPage($em);
 
               }
 
               break;
+
+            case 'cancelReservation':
+
+                if (isset($_SESSION['idClient']) && !empty($_SESSION['idClient'])) {
+
+                    if (isset($_GET['id']) && $_GET['id'] > 0) {
+
+                        $reservationId = $_GET['id'];
+
+                    (new ReservationController())->cancelReservation($reservationId);
+
+                    }else{
+
+                        throw new Exception("Aucune Reservation n'est indiquée!!");
+                    }
+
+             }else{
+
+                throw new Exception("La page que vous recherchez n'existe pas.");
+             }
+
+            break;
 
             default:
             throw new Exception("La page que vous recherchez n'existe pas.");
@@ -282,7 +535,7 @@ try {
 
             }else{
 
-                (new PageController())->homepage();
+             (new PageController())->homepage();
 
             }
             

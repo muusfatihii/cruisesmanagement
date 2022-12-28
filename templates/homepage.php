@@ -9,10 +9,7 @@
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <link rel="stylesheet" href="templates/styles/style.css">
-
-    <script src="templates/js/index.js"></script>
-
-    
+    <link rel="stylesheet" href="templates/styles/footer.css">
 
     <title>Ship Cruise</title>
 </head>
@@ -52,23 +49,23 @@
 
 <section>
     <div class="imgBack">
-        <h3 class="imgBack__title">If you are into <span>Seas & Oceans</span><br>What are you still waiting for?<br><a href="#" style="text-decoration: none;"><span class="bg-white bg-gradient rounded-2">Join us</span></a> on this journey</h3>
+        <h3 class="imgBack__title">If you are into <span>Seas & Oceans</span><br>What are you still waiting for?<br><a href="index.php?action=cruises" style="text-decoration: none;"><span class="bg-white bg-gradient rounded-2">Join us</span></a> on this journey</h3>
     </div>
 </section>
 
 
 <div class="cruises container">
-    <h2 class="cruises__title">Démarrent bien<span>tot</span> </h2>
+    <h2 class="cruises__title">Démarrent bien<span>tôt</span> </h2>
     <div class="row">
         <?php
         foreach($cruises as $cruise){
         ?>
         <div class="card col-12 col-md-6 col-lg-4 col-xl-3 item">
-            <img src="<?=$cruise->pic?>" class="card-img-top" alt="...">
+            <img src="uploads/<?=$cruise->pic?>" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title"><?=$cruise->departurePort?>, Le <?=$cruise->departureDate?></h5>
                 <p class="card-text"><?=$cruise->nbrNights?> Nuits à partir de <?=$cruise->minPrice?> chacune</p>
-                <a href="index.php?action=cruise&id=<?=$cruise->id?>" class="btn btn-primary item__btn">Je reserve ma place</a>
+                <a href="index.php?action=reserve" class="btn btn-primary item__btn">Je reserve ma place</a>
             </div>
         </div>
         <?php
@@ -80,7 +77,7 @@
 
 
     <div class="cruises container">
-        <h2 class="cruises__title"><span>Nos</span> destinations</h2>
+        <h2 class="cruises__title"><span>Nos</span> départs</h2>
         <div class="row">
 
             <?php
@@ -89,7 +86,7 @@
             ?>
 
             <div class="card col-12 col-md-6 col-lg-4 col-xl-3 item">
-                <img src="<?=$destination->pic?>" class="card-img-top" alt="...">
+                <img src="https://picsum.photos/300/150?random=1" class="card-img-top" alt="...">
                 <div class="card-body">
                     <h5 class="card-title"><?=$destination->name?></h5>
                     <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
@@ -105,19 +102,13 @@
     
         </div>
 </div>
-
-
-
-
-
-
-
-    
-
-
-
+<?php
+include 'templates/footer.php';
+?>
 <!--bootstrap JS Import-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
 integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="templates/js/index.js"></script>
 </body>
 </html>
+

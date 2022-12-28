@@ -10,10 +10,6 @@ spl_autoload_register(function($class){
 });
 
 
-
-
-
-
 class CruiseRepository
 {
 
@@ -23,7 +19,7 @@ class CruiseRepository
 {
 
     $statement = $this->connectiondb->getConnection()->prepare(
-        "SELECT `id`, `ship`, `pic`, `nbrNights`, `departurePort`, `departureDate`, `minPrice` FROM `cruise` WHERE 1"
+        "SELECT `id`, `ship`, `pic`, `nbrNights`, `departurePort`, `departureDate`, `minPrice` FROM `cruise` WHERE departureDate>=NOW() AND isfull=0 ORDER BY departureDate"
     );
     $statement->execute();
 
@@ -33,109 +29,103 @@ class CruiseRepository
 }
 
 
-public function getShipName($identifier){
+public function getCruisesAdmin():array
+{
 
     $statement = $this->connectiondb->getConnection()->prepare(
-        "SELECT `name` FROM `ship` WHERE id=?"
+        "SELECT `id`, `ship`, `pic`, `nbrNights`, `departurePort`, `departureDate`, `minPrice` FROM `cruise` WHERE departureDate>=NOW() ORDER BY departureDate"
+    );
+    $statement->execute();
+
+    $results = $statement->fetchAll();
+
+    return $results;
+}
+
+
+
+public function getfilteredCruisesPort(string $idDeparturePort):array
+{
+
+    $statement = $this->connectiondb->getConnection()->prepare(
+        "SELECT `id`, `ship`, `pic`, `nbrNights`, `departurePort`, `departureDate`, `minPrice` FROM `cruise` WHERE departurePort=? AND departureDate>=NOW()"
+    );
+    $statement->execute([$idDeparturePort]);
+
+    $results = $statement->fetchAll();
+
+    return $results;
+}
+
+public function getfilteredCruisesShip(string $idShip):array
+{
+
+    $statement = $this->connectiondb->getConnection()->prepare(
+        "SELECT `id`, `ship`, `pic`, `nbrNights`, `departurePort`, `departureDate`, `minPrice` FROM `cruise` WHERE ship=? AND departureDate>=NOW()"
+    );
+    $statement->execute([$idShip]);
+
+    $results = $statement->fetchAll();
+
+    return $results;
+}
+
+
+public function getfilteredCruisesMonth(string $month):array
+{
+
+    $statement = $this->connectiondb->getConnection()->prepare(
+        "SELECT `id`, `ship`, `pic`, `nbrNights`, `departurePort`, `departureDate`, `minPrice` FROM `cruise` WHERE departureDate=?"
+    );
+    $statement->execute([$month]);
+
+    $results = $statement->fetchAll();
+
+    return $results;
+}
+
+
+public function getShipId($identifier){
+
+    $statement = $this->connectiondb->getConnection()->prepare(
+        "SELECT `ship` FROM `cruise` WHERE id=?"
     );
 
     $statement->execute([$identifier]);
 
     $row = $statement->fetch();
-
-    return $row['name'];
+    
+    return $row['ship'];
 }
-
-public function minPrice($identifier){
-
-    $statement = $this->connectiondb->getConnection()->prepare(
-        "SELECT MIN(price) AS minPrice FROM `room` WHERE id=?"
-    );
-    $min = $statement->execute([$identifier]);
-
-return $min['minPrice'];
-}
-
-
-
-public function getPortName($identifier){
-
-    $statement = $this->connectiondb->getConnection()->prepare(
-        "SELECT `name` FROM `port` WHERE id=?"
-    );
-
-    $statement->execute([$identifier]);
-
-    $row = $statement->fetch();
-
-    return $row['name'];
-}
-
 
 
 public function getRecentCruises():array
 {
 
     $statement = $this->connectiondb->getConnection()->prepare(
-        "SELECT `id`, `ship`, `pic`, `nbrNights`, `departurePort`, `departureDate`, `minPrice` FROM `cruise` WHERE 1 ORDER BY departureDate LIMIT 3"
+        "SELECT `id`, `ship`, `pic`, `nbrNights`, `departurePort`, `departureDate`, `minPrice` 
+        FROM `cruise` WHERE departureDate>=NOW() ORDER BY `departureDate` DESC LIMIT 8"
     );
     $statement->execute();
 
-    $cruises = [];
-    while (($row = $statement->fetch())) {
-        $cruise = new Cruise();
-        $cruise->id = $row['id'];
-        $cruise->ship = $row['ship'];
-        $cruise->pic = $row['pic'];
-        $cruise->nbrNights = $row['nbrNights'];
-        $cruise->departurePort = $row['departurePort'];
-        $cruise->departureDate = $row['departureDate'];
-        $cruise->minPrice = $row['minPrice'];
-        
+    $results = $statement->fetchAll();
 
-        $cruises[] = $cruise;
-    }
-
-    return $cruises;
+    return $results;
 }
 
 
 
-public function getFilteredCruises($departurePort):array
-{
-
-    $statement = $this->connectiondb->getConnection()->prepare(
-        "SELECT `id`, `ship`, `pic`, `nbrNights`, `departurePort`, `departureDate`, `minPrice` FROM `cruise` WHERE departurePort=?"
-    );
-    $statement->execute([$departurePort]);
-
-    $cruises = [];
-    while (($row = $statement->fetch())) {
-        $cruise = new Cruise();
-        $cruise->id = $row['id'];
-        $cruise->ship = $row['ship'];
-        $cruise->pic = $row['pic'];
-        $cruise->nbrNights = $row['nbrNights'];
-        $cruise->departurePort = $row['departurePort'];
-        $cruise->departureDate = $row['departureDate'];
-        $cruise->minPrice = $row['minPrice'];
-        
-
-        $cruises[] = $cruise;
-    }
-
-    return $cruises;
-}
 
 
 
-public function getCruise(string $identifier)
+
+public function getCruise(string $idCruise)
 {
 
     $statement = $this->connectiondb->getConnection()->prepare(
         "SELECT `id`, `ship`, `pic`, `nbrNights`, `departurePort`, `departureDate`, `minPrice` FROM `cruise` WHERE id=?"
     );
-    $statement->execute([$identifier]);
+    $statement->execute([$idCruise]);
 
     $result = $statement->fetch();
     
@@ -151,13 +141,14 @@ public function createCruise(array $input)
     $shipID = $input['shipID'];
     $pic = $input['pic'];
     $nbrNights = $input['nbrNights'];
-    $departurePort = $input['departurePort'];
+    $departurePort = $input['departurePortID'];
     $departureDate = $input['departureDate'];
     $minPrice = $input['minPrice'];
 
     $statement = $this->connectiondb->getConnection()->prepare(
         "INSERT INTO `cruise`(`ship`, `pic`, `nbrNights`, `departurePort`, `departureDate`, `minPrice`) VALUES (?,?,?,?,?,?)"
     );
+    
     $affectedLines = $statement->execute([$shipID, $pic, $nbrNights, $departurePort, $departureDate, $minPrice]);
 
 
@@ -181,53 +172,55 @@ public function deleteCruise(string $identifier)
 }
 
 
-public function modifyCruisePic(string $identifier, array $input)
+public function modifyCruisePic(string $cruiseId, array $input)
 {
-    $name = $input['ship'];
+    $shipID = $input['shipID'];
     $pic = $input['pic'];
     $nbrNights = $input['nbrNights'];
-    $departurePort = $input['departurePort'];
+    $departurePort = $input['departurePortID'];
     $departureDate = $input['departureDate'];
     $minPrice = $input['minPrice'];
     
 
     $statement = $this->connectiondb->getConnection()->prepare(
 
-        "UPDATE `cruise` SET `name`='$name',`pic`='$pic',`nbrNights`='$nbrNights',`departurePort`='$departurePort',`departureDate`='$departureDate',`minPrice`='$minPrice' WHERE id= ?"
+        "UPDATE `cruise` SET `ship`='$shipID',`pic`='$pic',`nbrNights`='$nbrNights',`departurePort`='$departurePort',`departureDate`='$departureDate',`minPrice`='$minPrice' WHERE id= ?"
     );
-    $affectedLines =  $statement->execute([$identifier]);
+
+    $affectedLines =  $statement->execute([$cruiseId]);
 
     return ($affectedLines > 0);
 }
 
 
 
-public function modifyCruise(string $identifier, array $input)
+public function modifyCruise(string $cruiseId, array $input)
 {
-    $name = $input['ship'];
+    $shipID = $input['shipID'];
     $nbrNights = $input['nbrNights'];
-    $departurePort = $input['departurePort'];
+    $departurePort = $input['departurePortID'];
     $departureDate = $input['departureDate'];
     $minPrice = $input['minPrice'];
     
 
     $statement = $this->connectiondb->getConnection()->prepare(
 
-        "UPDATE `cruise` SET `name`='$name',`nbrNights`='$nbrNights',`departurePort`='$departurePort',`departureDate`='$departureDate',`minPrice`='$minPrice' WHERE id= ?"
+        "UPDATE `cruise` SET `ship`='$shipID',`nbrNights`='$nbrNights',`departurePort`='$departurePort',`departureDate`='$departureDate',`minPrice`='$minPrice' WHERE id= ?"
     );
-    $affectedLines =  $statement->execute([$identifier]);
+
+    $affectedLines =  $statement->execute([$cruiseId]);
 
     return ($affectedLines > 0);
 }
 
 
-public function getInfosCruise(string $identifier):array
+public function getInfosCruise(string $cruiseId):array
 {
 
     $statement = $this->connectiondb->getConnection()->prepare(
         "SELECT `pic`,`ship`,`departurePort`,`departureDate` FROM `cruise` WHERE id=?"
     );
-    $statement->execute([$identifier]);
+    $statement->execute([$cruiseId]);
 
     $row = $statement->fetch();
     
@@ -239,7 +232,7 @@ public function getInfosCruise(string $identifier):array
 public function getDestinations(){
 
     $statement = $this->connectiondb->getConnection()->prepare(
-        "SELECT distinct `departurePort`, `pic` FROM `cruise` WHERE 1"
+        "SELECT DISTINCT `departurePort` FROM `cruise` WHERE 1"
     );
     
     $statement->execute();
@@ -250,6 +243,59 @@ public function getDestinations(){
     return $row;
 
 }
+
+
+public function canBeCancelled(string $cruiseId)
+    {
+
+        $statement = $this->connectiondb->getConnection()->prepare(
+
+            "SELECT `departureDate` FROM  cruise WHERE `id`=?" 
+        );
+        
+        $statement->execute([$cruiseId]);
+
+        $row = $statement->fetch();
+
+
+        if($row['departureDate']>date('Y-m-d', strtotime(date('Y-m-d'). ' + 2 days'))){
+
+            return true;
+
+        }else{
+            
+            return false;
+        }
+
+    }
+
+
+    public function setfull($cruiseId){
+
+        $statement = $this->connectiondb->getConnection()->prepare(
+
+            "UPDATE `cruise` SET `isfull`='1' WHERE id= ?"
+        );
+    
+        $affectedLines =  $statement->execute([$cruiseId]);
+    
+        return ($affectedLines > 0);
+
+    }
+
+    public function unsetfull($cruiseId){
+
+        $statement = $this->connectiondb->getConnection()->prepare(
+
+            "UPDATE `cruise` SET `isfull`='0' WHERE id= ?"
+        );
+    
+        $affectedLines =  $statement->execute([$cruiseId]);
+    
+        return ($affectedLines > 0);
+
+
+    }
 
 
 

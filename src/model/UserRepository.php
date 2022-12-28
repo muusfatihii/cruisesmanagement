@@ -60,19 +60,23 @@ public function getClientId(string $email){
 public function checkUser(array $input)
    {
     $statement = $this->connectiondb->getConnection()->prepare(
-        "SELECT `id`,`role` FROM `user` WHERE `email` = ? AND `password` = ?"
+        "SELECT `id`,`role`,`password` FROM `user` WHERE `email` = ?"
     );
-    $statement->execute([$input['email'],$input['password']]);
+    $statement->execute([$input['email']]);
 
-    $auth = $statement->fetch();
+    $row = $statement->fetch();
+
+    $auth = ($row && password_verify($input['password'],$row['password']));
 
 
     if($auth){
+
         $_SESSION['email'] = $input['email'];
+
     }
 
 
-    return $auth;
+    return $row;
 
    }
 

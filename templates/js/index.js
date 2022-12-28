@@ -1,11 +1,10 @@
-// const navbar = document.querySelector('#mynav');
+const navbar = document.querySelector('#mynav');
 
-console.log("njhhhh");
-// window.onscroll = () => {
-//     if (window.scrollY > 300) {
-//         navbar.classList.remove('bg-transparent');
-//     } 
-//     // else {
-//     //     navbar.classList.remove('bg-transparent');
-//     // }
-// };
+
+window.onscroll = () => {
+    if (window.scrollY > 300) {
+        // navbar.classList.remove('bg-transparent');
+
+        console.log("done");
+    } 
+};

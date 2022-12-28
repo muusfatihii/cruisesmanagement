@@ -37,42 +37,19 @@ class ReservationRepository
 
 
 
-    public function cancelReservation(string $Reservationidentifier)
+    public function cancelReservation(string $ReservationId)
     {
 
         $statement = $this->connectiondb->getConnection()->prepare(
             "DELETE FROM `reservation` WHERE id = ? AND client = ?"
         );
-        $affectedLines = $statement->execute([$Reservationidentifier,$_SESSION['idClient']]);
+        $affectedLines = $statement->execute([$ReservationId,$_SESSION['idClient']]);
 
         return ($affectedLines > 0);
 
     }
 
 
-
-
-    public function canBeCancelled(string $identifier)
-    {
-
-        $statement = $this->connectiondb->getConnection()->prepare(
-            "SELECT `reservationDate` FROM `reservation` WHERE `id`=?"
-        );
-        $statement->execute([$identifier]);
-
-        
-
-        $row = $statement->fetch();
-
-        if($row['reservationDate']>date('Y-m-d H:i:s')){
-            return true;
-        }else{
-            return false;
-        }
-
-
-
-    }
 
     public function canBeReserved(string $identifier){
 
@@ -86,12 +63,12 @@ class ReservationRepository
     }
 
 
-    public function reserve(string $cruiseId){
+    public function reserve(string $cruiseId, string $roomPrice, string $reservedRoomId){
 
         $statement = $this->connectiondb->getConnection()->prepare(
-            "INSERT INTO `reservation` (`client`, `cruise`, `reservationDate`, `reservationPrice`, `room`) VALUES (?,?,NOW,?,?)"
+            "INSERT INTO `reservation` (`client`, `cruise`, `reservationDate`, `reservationPrice`, `room`) VALUES (?,?,NOW(),?,?)"
         );
-        $affectedLines = $statement->execute([$_SESSION['idClient'], $cruiseId, 100, 77]);
+        $affectedLines = $statement->execute([$_SESSION['idClient'], $cruiseId, $roomPrice, $reservedRoomId]);
 
 
         
@@ -105,12 +82,98 @@ class ReservationRepository
     {
 
         $statement = $this->connectiondb->getConnection()->prepare(
-            "SELECT COUNT(id) FROM `reservation` WHERE `cruise`=?"
+            "SELECT COUNT(id) as totRooms FROM `reservation` WHERE `cruise`=?"
         );
-        $reservedRooms = $statement->execute([$cruiseId]);
+        $statement->execute([$cruiseId]);
+
+        $reservedRooms = $statement->fetch();
+
+
+
+        return $reservedRooms['totRooms'];
+    }
+
+
+
+    public function countReservedRooms(string $cruiseId,string $roomTypeId){
+
+
+        $statement = $this->connectiondb->getConnection()->prepare(
+            "SELECT COUNT(reservation.id) FROM reservation 
+            INNER JOIN room ON reservation.room = room.id  
+            WHERE reservation.cruise=? AND room.roomType=?"
+        );
+
+        $reservedRooms = $statement->execute([$cruiseId,$roomTypeId]);
 
 
         return $reservedRooms;
     }
 
+
+
+    public function getRoom($cruiseId,$roomTypeId){
+
+        $statement = $this->connectiondb->getConnection()->prepare(
+            "SELECT room.id FROM room 
+            LEFT JOIN reservation ON room.id = reservation.room  
+            WHERE room.roomType=? AND reservation.cruise=?"
+        );
+
+        $statement->execute([$roomTypeId,$cruiseId]);
+
+        $roomId = $statement->fetch();
+
+
+        return $roomId;
+
+    }
+
+
+    public function getCruiseId($reservationId){
+
+        $statement = $this->connectiondb->getConnection()->prepare(
+            "SELECT  `cruise` FROM `reservation` WHERE `id`=?"
+        );
+        
+        $statement->execute([$reservationId]);
+
+        $row = $statement->fetch();
+
+
+        return $row['cruise'];
+
+    }
+
+    public function getReservedRoomsIds($cruiseId){
+
+        $statement = $this->connectiondb->getConnection()->prepare(
+            "SELECT  `room` FROM `reservation` WHERE `cruise`=?"
+        );
+        
+        $statement->execute([$cruiseId]);
+
+        $rooms = $statement->fetchAll();
+
+        return $rooms;
+
+    }
+
+
+    public function isreserved($cruiseId,$roomId){
+
+
+        $statement = $this->connectiondb->getConnection()->prepare(
+            "SELECT  `id` FROM `reservation` WHERE `cruise`=? AND `room`=?"
+        );
+        
+        $statement->execute([$cruiseId,$roomId]);
+
+        $reserved = $statement->fetch();
+
+        return $reserved;
+
+    }
+
 }
+

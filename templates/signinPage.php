@@ -13,7 +13,7 @@
         <form method="POST" action="index.php?action=signin" class="bg-white w-96 p-6 rounded shadow-sm">
             
                 <div class="flex items-center justify-center mb-4">
-                    <img src="images/logo.png" alt="logo" class="h-32" />
+                    <img src="templates/img/cruise.jpg" alt="logo" class="h-54 rounded" />
                 </div>
                 
                 <?php if(!empty($em)):?>
@@ -39,8 +39,14 @@
 
                 <button 
                 type="submit" 
+                class="bg-orange-500 w-full text-gray-100 py-2 rounded mb-4 hover:bg-blue-700 transition-colors">
+                Log In</button>
+
+                <button 
+                type="button"
+                onClick="location.href='index.php?action=signupPage'" 
                 class="bg-orange-500 w-full text-gray-100 py-2 rounded hover:bg-blue-700 transition-colors">
-                Login</button>
+                Sign Up</button>
 
             
         </form>

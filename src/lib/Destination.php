@@ -2,6 +2,6 @@
 
 
 class Destination{
-    public string $pic;
+    public ?string $pic;
     public string $name;
 }

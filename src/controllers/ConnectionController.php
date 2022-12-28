@@ -29,9 +29,13 @@ function signin($input){
 
     $auth = $userRepo->checkUser($input);
 
+    
+
     if(!$auth){
+
     $em="Ce compte n’existe pas";
     require('templates/signinPage.php');
+    
     }else{
 
         if($auth['role']!='admin'){
@@ -41,7 +45,9 @@ function signin($input){
 
 
         }else{
+
             $_SESSION['admin']=1;
+            
         }
 
         header ('location: index.php');
@@ -58,6 +64,7 @@ function signin($input){
         $userRepo->connectiondb = $connectiondb;
 
 
+        $input['password'] = password_hash($input['password'], PASSWORD_DEFAULT);
         $success = $userRepo->addUser($input);
 
 

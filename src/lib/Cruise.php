@@ -9,5 +9,5 @@ class Cruise{
     public string $nbrNights;
     public string $departurePort; 
     public string $departureDate; 
-    public string $minPrice; 
+    public ?string $minPrice; 
 }

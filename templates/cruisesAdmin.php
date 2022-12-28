@@ -22,7 +22,7 @@
 
 <nav class="navbar navbar-expand-md bg-dark bg-transparent navbar-dark fixed-top" id="mynav">
     <div class="container">
-        <a class="navbar-brand text-uppercase fw-bold" href="index.html">
+        <a class="navbar-brand text-uppercase fw-bold" href="index.php">
             <span class="bg-dark px-2 py-1 rounded-3 text-light">Ship</span>
             <span class="text-dark"> Cruise</span>
         </a>
@@ -39,10 +39,7 @@
                 <a class="nav-link text-dark" href="index.php?action=cruises">Croisières</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="index.php?action=addItem">Ajouter</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-dark" href="index.php?action=modifyItem">Modifier</a>
+                <a class="nav-link text-dark" href="index.php?action=adminDashboard">Dashboard</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-dark" href="index.php?action=logout">Log Out</a>
@@ -58,11 +55,11 @@
         <?php
         foreach($cruises as $cruise){?>
         <div class="card col-12 col-md-6 col-lg-4 col-xl-3 item">
-            <img src="<?=$cruise->pic?>" class="card-img-top" alt="...">
+            <img src="uploads/<?=$cruise->pic?>" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title"><?=$cruise->departurePort?></h5>
                 <p class="card-text">A partir de <?= $cruise->minPrice?></p>
-                <a href="#" class="btn btn-primary item__btn" href="index.php?action=reserve&id=<?=$cruise->id?>">Reserve votre place</a>
+                <a href="index.php?action=cruise&id=<?=$cruise->id?>" class="btn btn-primary item__btn" >Plus d'infos</a>
             </div>
         </div>
 

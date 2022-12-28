@@ -22,7 +22,7 @@
 
 <nav class="navbar navbar-expand-md bg-dark bg-transparent navbar-dark fixed-top" id="mynav">
     <div class="container">
-        <a class="navbar-brand text-uppercase fw-bold" href="index.html">
+        <a class="navbar-brand text-uppercase fw-bold" href="index.php">
             <span class="bg-dark px-2 py-1 rounded-3 text-light">Ship</span>
             <span class="text-dark"> Cruise</span>
         </a>
@@ -32,14 +32,14 @@
         </button>
 
         <ul class="collapse navbar-collapse justify-content-end fw-bold" id="navbarNav" style="list-style: none;">
-        <li class="nav-item active">
+            <li class="nav-item active">
                 <a class="nav-link text-dark" href="index.php">Home</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-dark" href="index.php?action=cruises">Croisières</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-dark" href="index.php?action=dashBoard">My Reservations</a>
+                <a class="nav-link text-dark" href="index.php?action=myReservations">My Reservation</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-dark" href="index.php?action=logout">Log Out</a>
@@ -49,17 +49,62 @@
 </nav>
 
 
+<center style="position: absolute;bottom:0px;left:0px;">
+
+      <select 
+      name="portID" 
+      id="portName" 
+      required>
+              <option value=""></option>
+              <?php
+                  foreach($ports as $port){
+              ?>
+              <option  value="<?=$port->id;?>"><?=$port->name; ?></option>
+              <?php
+              }
+              ?>
+      </select>
+      <select 
+      name="shipID" 
+      id="shipName" 
+      required>
+              <option value=""></option>
+              <?php
+                  foreach($ships as $ship){
+              ?>
+              <option  value="<?=$ship->id;?>"><?=$ship->name; ?></option>
+              <?php
+              }
+              ?>
+      </select>
+
+      <select 
+      name="departureMonth" 
+      id="departureMonth" 
+      required>
+              <option value=""></option>
+              <?php
+                  for($i=1;$i<=12;$i++){
+              ?>
+              <option  value="<?=$i?>"><?=$i?></option>
+              <?php
+              }
+              ?>
+      </select>
+</center>
+
+
 <div class="cruises container">
     <h2 class="cruises__title">Démarrent bien<span>tot</span> </h2>
     <div class="row">
         <?php
         foreach($cruises as $cruise){?>
         <div class="card col-12 col-md-6 col-lg-4 col-xl-3 item">
-            <img src="<?=$cruise->pic?>" class="card-img-top" alt="...">
+            <img src="uploads/<?=$cruise->pic?>" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title"><?=$cruise->departurePort?></h5>
                 <p class="card-text">A partir de <?= $cruise->minPrice?></p>
-                <a href="#" class="btn btn-primary item__btn" href="index.php?action=reserve&id=<?=$cruise->id?>">Reserve votre place</a>
+                <a href="index.php?action=cruise&id=<?=$cruise->id?>" class="btn btn-primary item__btn" >Je reserve ma place</a>
             </div>
         </div>
 
