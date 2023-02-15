@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Open+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Poppins:wght@300;400;500;600;700;900&display=swap');
+
+
+*{
+}
+.imgBack{
+   background-image: url("../img/imgBack.jpg");
+   width: 100vw;
+   height: 100vh;
+   background-position: center;
+   background-size: cover;
+   position: relative;
+}
+
+.imgBack__title{
+    position: absolute;
+    bottom: 6%;
+    left: 8%;
+    line-height: 35px;
+    font-size: 25px;
+    color: white;
+}
+
+.imgBack__title span{
+    color:#FEB862;
+}
+
+.imgBack__title span a{
+    text-decoration: none;
+    color: #FEB862;
+}
+
+
+.about_us{
+
+    height: 1200px;
+    width: 100vw;
+    background-color: #F9E4C0;
+
+}
+
+
+.item{
+    background-color: #FFFFFF;
+    border: none;
+}
+
+.item--orange{
+    background-color: #FEB862;
+}
+
+.item__btn{
+    background-color: #FEB862;
+    border: none;
+}
+
+
+
+.item__btn:hover{
+    background-color: #B97956;
+}
+
+.cruises{
+    padding-top: 100px;
+    padding-bottom: 100px;
+}
+
+.cruises__title{
+
+    color: black;
+    padding-bottom: 100px;
+    padding-left: 10px;
+
+}
+
+.cruises__title span{
+    color: #FEB862;
+}
+
