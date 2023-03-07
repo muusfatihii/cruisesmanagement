@@ -43,15 +43,18 @@ public function checkUser(array $input)
 
     $auth = ($row && password_verify($input['password'],$row['password']));
 
-
     if($auth){
 
         $_SESSION['email'] = $input['email'];
 
+        return $row;
+
+    }else{
+
+        return false;
+
     }
-
-    return $row;
-
+    
    }
 
 

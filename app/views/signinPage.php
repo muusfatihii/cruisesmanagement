@@ -24,7 +24,7 @@
                 placeholder="E-mail"
                 class="w-full py-2 bg-gray-100 text-gray-500 px-1 outline-none mb-4"
                 name="email" 
-                type="text" 
+                type="email" 
                 required
                 />
                 <input 
@@ -43,8 +43,14 @@
                 <button 
                 type="button"
                 onClick="location.href='/cruises/public/page/signup'" 
-                class="bg-orange-500 w-full text-gray-100 py-2 rounded hover:bg-blue-700 transition-colors">
+                class="bg-orange-500 w-full text-gray-100 py-2 rounded mb-4 hover:bg-blue-700 transition-colors">
                 Sign Up</button>
+
+                <button 
+                type="button"
+                onClick="location.href='/cruises/public'" 
+                class="bg-orange-500 w-full text-gray-100 py-2 rounded hover:bg-blue-700 transition-colors">
+                Back</button>
 
             
         </form>

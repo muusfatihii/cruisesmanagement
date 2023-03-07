@@ -13,7 +13,7 @@ $title="Statistiques"?>
 
 <div class="col-span-12 mt-8 mb-8 mx-auto">
                                 <div class="grid grid-cols-6 gap-10 mt-5">
-                                    <a class="transform  hover:scale-105 transition duration-300 shadow-xl rounded-lg col-span-12 sm:col-span-6 xl:col-span-3 intro-y bg-white"
+                                    <a class="transform shadow-xl rounded-lg col-span-12 sm:col-span-6 xl:col-span-3 intro-y bg-white"
                                         href="#">
                                         <div class="p-5">
                                             <div class="flex justify-between">
@@ -31,7 +31,7 @@ $title="Statistiques"?>
                                             </div>
                                         </div>
                                     </a>
-                                    <a class="transform  hover:scale-105 transition duration-300 shadow-xl rounded-lg col-span-12 sm:col-span-6 xl:col-span-3 intro-y bg-white"
+                                    <a class="transform shadow-xl rounded-lg col-span-12 sm:col-span-6 xl:col-span-3 intro-y bg-white"
                                         href="#">
                                         <div class="p-5">
                                             <div class="flex justify-between">
@@ -48,7 +48,7 @@ $title="Statistiques"?>
                                             </div>
                                         </div>
                                     </a>
-                                    <a class="transform  hover:scale-105 transition duration-300 shadow-xl rounded-lg col-span-12 sm:col-span-6 xl:col-span-3 intro-y bg-white"
+                                    <a class="transform shadow-xl rounded-lg col-span-12 sm:col-span-6 xl:col-span-3 intro-y bg-white"
                                         href="#">
                                         <div class="p-5">
                                             <div class="flex justify-between">

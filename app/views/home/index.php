@@ -7,14 +7,13 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/footer.css">
     
     <title>Ship Cruise</title>
 
 </head>
-<body>
+<body style="position: relative;">
 
 
 <nav class="navbar navbar-expand-md bg-dark bg-transparent navbar-dark fixed-top" id="mynav">
@@ -45,7 +44,7 @@
                 <a class="nav-link text-dark" href="/cruises/public/page/dashboard">Dashboard</a>
             </li>
             <?php endif;?>
-            <?php if((isset($_SESSION['admin']) && $_SESSION['admin']=1) || (isset($_SESSION['idClient']))):?>
+            <?php if((isset($_SESSION['admin']) && $_SESSION['admin']==1) || (isset($_SESSION['idClient']))):?>
             <li class="nav-item">
                 <a class="nav-link text-dark" href="auth/logout">Log out</a>
             </li>
@@ -125,6 +124,13 @@
     
         </div>
 </div>
+
+<?php
+
+include '../app/views/footer_.php';
+
+
+?>
 <!--bootstrap JS Import-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
 integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
